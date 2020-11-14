@@ -235,8 +235,8 @@ def test_exception_when_no_tpu_found(tmpdir):
     trainer = Trainer(
         default_root_dir=tmpdir,
         max_epochs=1,
-        limit_train_batches=0.4,
-        limit_val_batches=0.2,
+        limit_train_batches=0.6,
+        limit_val_batches=0.4,
         tpu_cores=8,
     )
 
