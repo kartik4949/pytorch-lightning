@@ -29,8 +29,6 @@ from pytorch_lightning.callbacks.base import Callback
 from pytorch_lightning.utilities import rank_zero_warn
 from pytorch_lightning.utilities.xla_device_utils import XLADeviceUtils
 
-
-
 torch_inf = torch.tensor(np.Inf)
 
 
