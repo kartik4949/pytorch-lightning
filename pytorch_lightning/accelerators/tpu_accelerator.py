@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import importlib
 import io
 import math
 import os
@@ -29,9 +30,7 @@ from pytorch_lightning.utilities.cloud_io import atomic_save
 from pytorch_lightning.utilities.exceptions import MisconfigurationException
 from pytorch_lightning.utilities.xla_device_utils import XLADeviceUtils
 
-TPU_AVAILABLE = XLADeviceUtils.tpu_device_exists()
-
-if TPU_AVAILABLE:
+if importlib.util.find_spec("torch_xla"):
     import torch_xla
     import torch_xla.core.xla_model as xm
     import torch_xla.distributed.parallel_loader as xla_pl
@@ -59,7 +58,7 @@ class TPUAccelerator(Accelerator):
         rank_zero_info(f'training on {self.trainer.tpu_cores} TPU cores')
 
         # TODO: Move this check to Trainer __init__ or device parser
-        if not TPU_AVAILABLE:
+        if not XLADeviceUtils.tpu_device_exists():
             raise MisconfigurationException('PyTorch XLA not installed.')
 
         # see: https://discuss.pytorch.org/t/segfault-with-multiprocessing-queue/81292/2
@@ -183,7 +182,7 @@ class TPUAccelerator(Accelerator):
         See Also:
             - :func:`~pytorch_lightning.utilities.apply_func.move_data_to_device`
         """
-        if not TPU_AVAILABLE:
+        if not XLADeviceUtils.tpu_device_exists():
             raise MisconfigurationException(
                 'Requested to transfer batch to TPU but XLA is not available.'
                 ' Are you sure this machine has TPUs?'

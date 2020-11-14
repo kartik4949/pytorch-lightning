@@ -29,7 +29,6 @@ from pytorch_lightning.callbacks.base import Callback
 from pytorch_lightning.utilities import rank_zero_warn
 from pytorch_lightning.utilities.xla_device_utils import XLADeviceUtils
 
-TPU_AVAILABLE = XLADeviceUtils.tpu_device_exists()
 
 
 torch_inf = torch.tensor(np.Inf)
@@ -184,7 +183,7 @@ class EarlyStopping(Callback):
         if not isinstance(current, torch.Tensor):
             current = torch.tensor(current, device=pl_module.device)
 
-        if trainer.use_tpu and TPU_AVAILABLE:
+        if trainer.use_tpu and XLADeviceUtils.tpu_device_exists():
             current = current.cpu()
 
         if self.monitor_op(current - self.min_delta, self.best_score):

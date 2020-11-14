@@ -13,7 +13,7 @@
 # limitations under the License.
 
 """nn.Module with additional great features."""
-
+import importlib
 import os
 import tempfile
 import collections
@@ -45,6 +45,9 @@ from pytorch_lightning.callbacks import Callback
 from torch import ScriptModule, Tensor
 from torch.nn import Module
 from torch.optim.optimizer import Optimizer
+
+if importlib.util.find_spec("torch_xla"):
+    import torch_xla.core.xla_model as xm
 
 
 class LightningModule(
@@ -1388,7 +1391,6 @@ class LightningModule(
 
         """
         if on_tpu and XLADeviceUtils.tpu_device_exists():
-            import torch_xla.core.xla_model as xm
             xm.optimizer_step(optimizer, optimizer_args={'closure': optimizer_closure, **kwargs})
         elif self.trainer.amp_backend == AMPType.NATIVE:
             # native amp does not yet support closures.

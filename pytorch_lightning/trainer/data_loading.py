@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import importlib
 import multiprocessing
 import platform
 from abc import ABC, abstractmethod
@@ -31,14 +31,12 @@ from pytorch_lightning.utilities.xla_device_utils import XLADeviceUtils
 from copy import deepcopy
 from typing import Iterable
 
-TPU_AVAILABLE = XLADeviceUtils.tpu_device_exists()
 try:
     from apex import amp
 except ImportError:
     amp = None
 
-if TPU_AVAILABLE:
-    import torch_xla
+if importlib.util.find_spec("torch_xla"):
     import torch_xla.core.xla_model as xm
 
 try:
@@ -142,7 +140,7 @@ class TrainerDataLoadingMixin(ABC):
         return dataloader
 
     def _get_distributed_sampler(self, dataloader, shuffle):
-        if self.use_tpu:
+        if self.use_tpu and XLADeviceUtils.tpu_device_exists():
             kwargs = dict(num_replicas=xm.xrt_world_size(), rank=xm.get_ordinal())
         elif self.use_horovod:
             kwargs = dict(num_replicas=hvd.size(), rank=hvd.rank())
