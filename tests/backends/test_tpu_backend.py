@@ -39,7 +39,7 @@ def test_resume_training_on_cpu():
     assert weight_tensor.device == torch.device("cpu")
 
     # Verify that training is resumed on CPU
-    trainer = Trainer(resume_from_checkpoint=model_path, checkpoint_callback=True, max_epochs=20,)
+    trainer = Trainer(resume_from_checkpoint=model_path, checkpoint_callback=True, max_epochs=1,)
     result = trainer.fit(model)
 
     assert result == 1

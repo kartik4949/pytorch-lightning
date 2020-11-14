@@ -33,6 +33,7 @@ def test_tpu_device_absence():
 
 
 @pytest.mark.skipif(not XLA_AVAILABLE, reason="test requires torch_xla to be installed")
+@pl_multi_process_test
 def test_tpu_device_presence():
     """Check tpu_device_exists returns True when TPU is available"""
     assert xla_utils.XLADeviceUtils.tpu_device_exists() is True
