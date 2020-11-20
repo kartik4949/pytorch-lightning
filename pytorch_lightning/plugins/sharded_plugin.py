@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import List, Any, Optional
+from typing import List, Any, Optional, Union
 
 from fairscale.optim import OSS
 
@@ -88,3 +88,26 @@ class DDPShardedPlugin(DDPPlugin):
                     if scheduler.optimizer == optimizer:
                         scheduler.optimizer = zero_optimizer
                 del optimizer
+
+    def reference_model_in_plugin_wrapper(
+            self,
+            model: Union[LightningShardedDataParallel, LightningModule]
+    ) -> LightningModule:
+        """
+        Override to modify returning base :class:`LightningModule`
+        when accessing variable and functions outside of the parallel wrapper.
+
+        Example::
+            ref_model = ddp_plugin.reference_model(model)
+            ref_model.training_step(...)
+
+        Args:
+            model: Model with parallel wrapper.
+
+        Returns: Reference :class:`LightningModule` within parallel wrapper.
+
+        """
+        if isinstance(model, LightningShardedDataParallel):
+            return model.module
+        else:
+            return model
